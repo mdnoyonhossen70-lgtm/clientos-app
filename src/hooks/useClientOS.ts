@@ -14,9 +14,10 @@ async function loadData(user: User | null, localMode: boolean) {
   const key = storageKey(user, localMode);
   const cached = localStorage.getItem(key);
   const cachedData = cached ? normalizeData(JSON.parse(cached)) : null;
+  const supabaseClient = supabase;
 
-  if (supabase && user) {
-    const { data, error } = await supabase.from("app_state").select("state").eq("user_id", user.id).maybeSingle();
+  if (supabaseClient && user) {
+    const { data, error } = await supabaseClient.from("app_state").select("state").eq("user_id", user.id).maybeSingle();
     if (error) throw error;
     const remoteData = data?.state ? normalizeData(data.state) : cachedData ?? seedData();
     localStorage.setItem(key, JSON.stringify(remoteData));
@@ -29,9 +30,10 @@ async function loadData(user: User | null, localMode: boolean) {
 async function persistData(data: ClientOSData, user: User | null, localMode: boolean) {
   const key = storageKey(user, localMode);
   localStorage.setItem(key, JSON.stringify(data));
+  const supabaseClient = supabase;
 
-  if (supabase && user) {
-    await supabase.from("app_state").upsert({
+  if (supabaseClient && user) {
+    await supabaseClient.from("app_state").upsert({
       user_id: user.id,
       state: data,
       updated_at: new Date().toISOString(),
@@ -50,9 +52,10 @@ export function useClientOS(user: User | null, localMode: boolean) {
   });
 
   useEffect(() => {
-    if (!supabase || !user) return;
+    const supabaseClient = supabase;
+    if (!supabaseClient || !user) return;
 
-    const channel = supabase
+    const channel = supabaseClient
       .channel(`app-state-${user.id}`)
       .on(
         "postgres_changes",
@@ -65,7 +68,7 @@ export function useClientOS(user: User | null, localMode: boolean) {
       .subscribe();
 
     return () => {
-      void supabase.removeChannel(channel);
+      void supabaseClient.removeChannel(channel);
     };
   }, [queryClient, queryKey, user]);
 
