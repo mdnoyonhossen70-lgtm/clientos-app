@@ -5,6 +5,7 @@ import type { ClientOSData } from "../types";
 import { metrics } from "../lib/analytics";
 import { useAuth } from "../hooks/useAuth";
 import { Button } from "./ui/button";
+import { InstallPrompt } from "./InstallPrompt";
 
 type AuthApi = ReturnType<typeof useAuth>;
 
@@ -58,6 +59,7 @@ export function Shell({ children, auth, data }: { children: ReactNode; auth: Aut
             <p className="mt-1 text-2xl font-extrabold">{stats.daily}%</p>
             <p className="text-xs text-white/40">{data.streak.currentStreak} day streak</p>
           </div>
+          <InstallPrompt className="mb-2" />
           <Button variant="ghost" className="w-full justify-start" onClick={() => void auth.signOut()}>
             <LogOut className="h-4 w-4" />
             Sign out
@@ -85,6 +87,7 @@ export function Shell({ children, auth, data }: { children: ReactNode; auth: Aut
           </NavLink>
         ))}
       </nav>
+      <InstallPrompt mobile />
     </div>
   );
 }

@@ -59,6 +59,18 @@ This repository is optimized for static Netlify deployment.
 
 The `public/_redirects` file and `netlify.toml` both include SPA routing support for React Router.
 
+## PWA Installability
+
+ClientOS is configured as an installable PWA with `vite-plugin-pwa`.
+
+- Manifest: `public/manifest.json`
+- Icons: `public/icons`
+- Service worker: generated during `npm run build`
+- Update strategy: auto-update
+- Display mode: standalone
+
+After deployment, test the installed experience in Chrome or Edge from the browser install icon or the in-app `Install App` button.
+
 ## Data Model
 
 For simple maintenance, ClientOS stores the personal workspace as one JSON document in Supabase:
