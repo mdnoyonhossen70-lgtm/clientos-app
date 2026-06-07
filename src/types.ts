@@ -39,6 +39,26 @@ export type TimelineEvent = {
   kind: "activity" | "lead" | "streak" | "achievement";
 };
 
+export type FocusSessionStatus = "completed" | "interrupted";
+
+export type FocusSessionType = "Focus" | "Break";
+
+export type FocusSession = {
+  id: string;
+  startedAt: string;
+  endedAt: string;
+  durationMinutes: number;
+  sessionType: FocusSessionType;
+  note: string;
+  status: FocusSessionStatus;
+};
+
+export type FocusState = {
+  dailyGoalMinutes: number;
+  currentNote: string;
+  sessions: FocusSession[];
+};
+
 export type StreakState = {
   currentStreak: number;
   bestStreak: number;
@@ -52,4 +72,5 @@ export type ClientOSData = {
   leads: Lead[];
   timeline: TimelineEvent[];
   streak: StreakState;
+  focus: FocusState;
 };

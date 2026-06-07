@@ -3,6 +3,11 @@ import type { Session, User } from "@supabase/supabase-js";
 import { isSupabaseConfigured, supabase } from "../lib/supabase";
 
 const localModeKey = "clientos.local-mode";
+const productionUrl = "https://clientosx.netlify.app";
+
+function authRedirectUrl() {
+  return import.meta.env.PROD ? productionUrl : window.location.origin;
+}
 
 type AuthState = {
   user: User | null;
@@ -56,7 +61,7 @@ export function useAuth() {
         if (!supabase) throw new Error("Supabase is not configured.");
         const { error } = await supabase.auth.signInWithOtp({
           email,
-          options: { emailRedirectTo: window.location.origin },
+          options: { emailRedirectTo: authRedirectUrl() },
         });
         if (error) throw error;
       },
@@ -64,7 +69,7 @@ export function useAuth() {
         if (!supabase) throw new Error("Supabase is not configured.");
         const { error } = await supabase.auth.signInWithOAuth({
           provider: "google",
-          options: { redirectTo: window.location.origin },
+          options: { redirectTo: authRedirectUrl() },
         });
         if (error) throw error;
       },

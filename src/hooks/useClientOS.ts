@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { User } from "@supabase/supabase-js";
-import type { ActivityCategory, ClientOSData, Lead, LeadStatus } from "../types";
+import type { ActivityCategory, ClientOSData, FocusSession, Lead, LeadStatus } from "../types";
 import { event, evaluateStreak, normalizeData, seedData } from "../lib/data";
 import { supabase } from "../lib/supabase";
 import { uid } from "../lib/utils";
@@ -167,6 +167,33 @@ export function useClientOS(user: User | null, localMode: boolean) {
         const lead = data.leads.find((item) => item.id === id);
         data.leads = data.leads.filter((item) => item.id !== id);
         if (lead) data.timeline.unshift(event("lead", "Lead removed", lead.businessName, lead.platform));
+        return data;
+      });
+    },
+    updateFocusGoal(minutes: number) {
+      updateData((data) => {
+        data.focus.dailyGoalMinutes = Math.max(15, minutes);
+        return data;
+      });
+    },
+    updateFocusNote(note: string) {
+      updateData((data) => {
+        data.focus.currentNote = note;
+        return data;
+      });
+    },
+    addFocusSession(session: Omit<FocusSession, "id">) {
+      updateData((data) => {
+        const nextSession: FocusSession = { ...session, id: uid("focus") };
+        data.focus.sessions.unshift(nextSession);
+        data.timeline.unshift(
+          event(
+            "activity",
+            `${nextSession.sessionType} session ${nextSession.status}`,
+            `${nextSession.durationMinutes} min - ${nextSession.note || "No note"}`,
+            "Focus Mode",
+          ),
+        );
         return data;
       });
     },

@@ -1,4 +1,4 @@
-import type { ClientOSData, Lead, LeadStatus, TimelineEvent } from "../types";
+import type { ClientOSData, FocusState, Lead, LeadStatus, TimelineEvent } from "../types";
 import { defaultActivities, leadStatuses } from "./constants";
 import { dateKey, daysBetween } from "./date";
 import { percentage, uid } from "./utils";
@@ -58,6 +58,15 @@ export function seedData(): ClientOSData {
       lastCompletedDate: null,
       lastMissedDate: null,
     },
+    focus: defaultFocusState(),
+  };
+}
+
+export function defaultFocusState(): FocusState {
+  return {
+    dailyGoalMinutes: 120,
+    currentNote: "Website-less business outreach",
+    sessions: [],
   };
 }
 
@@ -87,6 +96,11 @@ export function normalizeData(input: unknown): ClientOSData {
     leads: Array.isArray(data.leads) ? data.leads : fallback.leads,
     timeline: Array.isArray(data.timeline) ? data.timeline : fallback.timeline,
     streak: data.streak ?? fallback.streak,
+    focus: {
+      ...fallback.focus,
+      ...(data.focus ?? {}),
+      sessions: Array.isArray(data.focus?.sessions) ? data.focus.sessions : fallback.focus.sessions,
+    },
   };
 }
 
